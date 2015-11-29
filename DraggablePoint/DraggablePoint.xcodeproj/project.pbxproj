@@ -14,6 +14,8 @@
 		EBDD4C651C0B2A20000E996A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBDD4C631C0B2A20000E996A /* LaunchScreen.storyboard */; };
 		EBDD4C701C0B2A20000E996A /* DraggablePointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD4C6F1C0B2A20000E996A /* DraggablePointTests.swift */; };
 		EBDD4C7B1C0B2A20000E996A /* DraggablePointUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD4C7A1C0B2A20000E996A /* DraggablePointUITests.swift */; };
+		EBDD4C8B1C0B2B0E000E996A /* DraggablePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD4C891C0B2B0E000E996A /* DraggablePoint.swift */; };
+		EBDD4C8C1C0B2B0E000E996A /* DraggablePoint.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBDD4C8A1C0B2B0E000E996A /* DraggablePoint.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		EBDD4C761C0B2A20000E996A /* DraggablePointUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DraggablePointUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBDD4C7A1C0B2A20000E996A /* DraggablePointUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggablePointUITests.swift; sourceTree = "<group>"; };
 		EBDD4C7C1C0B2A20000E996A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EBDD4C891C0B2B0E000E996A /* DraggablePoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DraggablePoint.swift; path = DraggablePointSource/DraggablePoint.swift; sourceTree = "<group>"; };
+		EBDD4C8A1C0B2B0E000E996A /* DraggablePoint.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = DraggablePoint.xcassets; path = DraggablePointSource/DraggablePoint.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,7 @@
 		EBDD4C4E1C0B2A20000E996A = {
 			isa = PBXGroup;
 			children = (
+				EBDD4C881C0B2A69000E996A /* DragablePointSource */,
 				EBDD4C591C0B2A20000E996A /* DraggablePoint */,
 				EBDD4C6E1C0B2A20000E996A /* DraggablePointTests */,
 				EBDD4C791C0B2A20000E996A /* DraggablePointUITests */,
@@ -123,6 +128,15 @@
 				EBDD4C7C1C0B2A20000E996A /* Info.plist */,
 			);
 			path = DraggablePointUITests;
+			sourceTree = "<group>";
+		};
+		EBDD4C881C0B2A69000E996A /* DragablePointSource */ = {
+			isa = PBXGroup;
+			children = (
+				EBDD4C891C0B2B0E000E996A /* DraggablePoint.swift */,
+				EBDD4C8A1C0B2B0E000E996A /* DraggablePoint.xcassets */,
+			);
+			name = DragablePointSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,6 +245,7 @@
 			files = (
 				EBDD4C651C0B2A20000E996A /* LaunchScreen.storyboard in Resources */,
 				EBDD4C621C0B2A20000E996A /* Assets.xcassets in Resources */,
+				EBDD4C8C1C0B2B0E000E996A /* DraggablePoint.xcassets in Resources */,
 				EBDD4C601C0B2A20000E996A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -256,6 +271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBDD4C8B1C0B2B0E000E996A /* DraggablePoint.swift in Sources */,
 				EBDD4C5D1C0B2A20000E996A /* ViewController.swift in Sources */,
 				EBDD4C5B1C0B2A20000E996A /* AppDelegate.swift in Sources */,
 			);
@@ -399,10 +415,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DraggablePoint/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = private.DraggablePoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -410,10 +429,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = DraggablePoint/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = private.DraggablePoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
