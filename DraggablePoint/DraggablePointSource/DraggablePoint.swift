@@ -12,7 +12,7 @@ import UIKit
     ///从父视图上删除时的委托方法
     ///
     /// :param: DraggablePointBeenRemoved 被删除的DraggablePoint
-    optional func didRemoveFromFatherView(DraggablePointBeenRemoved:NSObject)
+    optional func didRemoveFromSuperView(DraggablePointBeenRemoved:NSObject)
 }
 
 class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
@@ -24,7 +24,9 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
     ///拖拽时的标签
     var dragingPointUILable = UILabel()
     ///父视图控制器
-    var fatherVC = ViewController()
+    var superVC = ViewController()
+    ///被添加到的视图
+    var viewBA = UIView()
     ///是否拉断
     var broken = false
     ///拉扯中段图层
@@ -41,6 +43,7 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
     required override init(frame: CGRect) {
         super.init(frame: frame)
         dragingPointImageView.frame = frame
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("deviceOrientationDidChange"), name: "UIDeviceOrientationDidChangeNotification", object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -51,13 +54,15 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
     
     /// 向当前页面添加一个可拖拽的圆点
     ///
-    /// :param: fatherViewController 父页面视图控制器(cell中添加圆点，请传入tableView所在页的controller)
-    /// :param: frame 圆点的位置和大小
+    /// :param: superViewController 父页面视图控制器(cell中添加圆点，请传入tableView所在页的controller)
+    /// :param: viewBeenAdded 被添加到的页面
+    /// :param: frame 圆点的位置和大小(请传入一个正方形区域，若传入长方形，将自动取最长边作正方形区域来绘制圆点)
     /// :param: num 圆点中的数字
+    /// :param: maximum 圆点中的数字的最大值(传入非正数可让圆点显示整型范围内全部数字，传入正数则限制圆点显示最大值，超过后显示"(最大值)+")
     /// :param: labelFont 圆点中数字的文字格式
-    /// :param: labelColor 圆点中数字的文字格式
+    /// :param: labelColor 圆点中数字的文字颜色(默认白色)
     /// :param: pointColor 点的颜色(默认红色)
-    func addDraggablePoint(fatherViewController:ViewController, frame:CGRect, num:Int, labelFont:UIFont,labelColor:UIColor?, pointColor:UIColor?){
+    func addDraggablePoint(superViewController:ViewController, viewBeenAdded:UIView, frame:CGRect, num:Int, maximum:(Int), labelFont:UIFont, labelColor:UIColor?, pointColor:UIColor?){
         if frame.size.height == frame.size.width{
             resumableMaximumDistance = frame.size.height / 2 * 3
             self.frame = frame
@@ -75,16 +80,26 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
             mainColor = pointColor!
         }
         
-        self.setTitle("\(num)", forState: UIControlState.Normal)
+        if maximum > 0{
+            if num > maximum{
+                self.setTitle("\(maximum)+", forState: UIControlState.Normal)
+            }else{
+                self.setTitle("\(num)", forState: UIControlState.Normal)
+            }
+        }else{
+            self.setTitle("\(num)", forState: UIControlState.Normal)
+        }
+        
         self.setTitleColor(UIColor(white: 1.0, alpha: 1.0), forState: UIControlState.Normal)
         self.setTitleColor(UIColor(white: 1.0, alpha: 1.0), forState: UIControlState.Highlighted)
         self.titleLabel?.font = labelFont
         
-        fatherVC = fatherViewController
-        fatherVC.view.layer.addSublayer(shapeLayer)
-        fatherVC.view.addSubview(self)
+        superVC = superViewController
+        shapeLayer.frame = superVC.view.bounds
+        superVC.view.layer.addSublayer(shapeLayer)
         
-        shapeLayer.frame = fatherVC.view.bounds
+        viewBA = viewBeenAdded
+        viewBA.addSubview(self)
         
         self.setBackgroundImage(self.makeBackgroundImageWithColor(mainColor), forState: UIControlState.Normal)
         self.setBackgroundImage(self.makeBackgroundImageWithColor(mainColor), forState: UIControlState.Highlighted)
@@ -92,7 +107,7 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
         shapeLayer.fillColor = mainColor.CGColor
         
         dragingPointUILable.frame = CGRect(x: 0.0, y: 0.0, width: self.bounds.width, height: self.bounds.height)
-        dragingPointUILable.text = "\(num)"
+        dragingPointUILable.text = self.titleLabel?.text
         dragingPointUILable.font = labelFont
         dragingPointUILable.textColor = UIColor(white: 1.0, alpha: 1.0)
         dragingPointUILable.textAlignment = NSTextAlignment.Center
@@ -253,6 +268,15 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
         return resultImage
     }
     
+    func deviceOrientationDidChange(){
+        broken = false
+        self.dragingPointImageView.removeFromSuperview()
+        self.dragingPointUILable.removeFromSuperview()
+        self.hidden = false
+        self.shapeLayer.fillColor = UIColor.clearColor().CGColor
+        self.shapeLayer.hidden = true
+    }
+    
     // MARK: - Animations
     
     func reboundedAnimation() {
@@ -261,7 +285,7 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     self.shapeLayer.hidden = false
                     self.shapeLayer.fillColor = self.mainColor.CGColor
-                    self.drawPath(self.frame.size.height / 2, pointA: self.dragingPointImageView.center, pointB: self.center)
+                    self.drawPath(self.frame.size.height / 2, pointA: self.dragingPointImageView.center, pointB: UIView(frame: self.convertRect(self.bounds, toView: self.superVC.view)).center)
                 })
             }
             usleep(16000)
@@ -270,9 +294,9 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
     
     func explosionAnimation(touches:Set<UITouch>){
         let brokeAnimateView = UIImageView(frame: CGRectMake(0.0, 0.0, 90.6, 66.0))
-        brokeAnimateView.center = (touches.first?.locationInView(fatherVC.view))!
+        brokeAnimateView.center = (touches.first?.locationInView(superVC.view))!
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            self.fatherVC.view.addSubview(brokeAnimateView)
+            self.superVC.view.addSubview(brokeAnimateView)
             brokeAnimateView.image = UIImage(named: "frame1")
         }
         usleep(frame_IntervalTime)
@@ -309,24 +333,24 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
     // MARK: - DraggablePointTouchEvents
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        fatherVC.view.addSubview(dragingPointImageView)
-        dragingPointImageView.frame = self.frame
+        dragingPointImageView.frame = self.convertRect(self.bounds, toView: superVC.view)
         dragingPointImageView.layer.cornerRadius = self.layer.cornerRadius
         dragingPointImageView.layer.masksToBounds = true
         dragingPointImageView.addSubview(dragingPointUILable)
+        superVC.view.addSubview(dragingPointImageView)
         self.hidden = true
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        shapeLayer.fillColor = mainColor.CGColor
         self.shapeLayer.hidden = false
-        self.drawPath(self.frame.size.height / 2, pointA: (touches.first?.locationInView(fatherVC.view))!, pointB: self.center)
-        dragingPointImageView.center = (touches.first?.locationInView(fatherVC.view))!
+        self.shapeLayer.fillColor = self.mainColor.CGColor
+        self.drawPath(self.frame.size.height / 2, pointA: (touches.first?.locationInView(superVC.view))!, pointB: UIView(frame: self.convertRect(self.bounds, toView: superVC.view)).center)
+        dragingPointImageView.center = (touches.first?.locationInView(superVC.view))!
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if broken{
-            if self.distanceBetweenPoints(self.center, point2: (touches.first?.locationInView(fatherVC.view))!) <= resumableMaximumDistance{
+            if self.distanceBetweenPoints(UIView(frame: self.convertRect(self.bounds, toView: superVC.view)).center, point2: (touches.first?.locationInView(superVC.view))!) <= resumableMaximumDistance{
                 let threadForFrame = NSThread(target: self, selector: Selector("reboundedAnimation"), object: nil)
                 threadForFrame.start()
                 self.shapeLayer.fillColor = UIColor.clearColor().CGColor
@@ -335,7 +359,7 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
                     delay: 0.0,
                     options: UIViewAnimationOptions.CurveEaseIn,
                     animations: { () -> Void in
-                    self.dragingPointImageView.center = self.center
+                    self.dragingPointImageView.center = UIView(frame: self.convertRect(self.bounds, toView: self.superVC.view)).center
                     }, completion: { (finished:Bool) -> Void in
                         self.dragingPointImageView.removeFromSuperview()
                         self.dragingPointUILable.removeFromSuperview()
@@ -349,8 +373,8 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
                 self.dragingPointUILable.removeFromSuperview()
                 self.removeFromSuperview()
                 if delegate != nil {
-                    if delegate?.respondsToSelector(Selector("didRemoveFromFatherView:")) == true {
-                        delegate?.didRemoveFromFatherView!(self)
+                    if delegate?.respondsToSelector(Selector("didRemoveFromSuperView:")) == true {
+                        delegate?.didRemoveFromSuperView!(self)
                     }
                 }
             }
@@ -363,10 +387,8 @@ class DraggablePoint: UIButton, UIGestureRecognizerDelegate {
                 initialSpringVelocity: 30.0,
                 options: UIViewAnimationOptions.CurveEaseIn,
                 animations: { () -> Void in
-                self.dragingPointImageView.center = self.center
+                self.dragingPointImageView.center = UIView(frame: self.convertRect(self.bounds, toView: self.superVC.view)).center
                 }){ (finished:Bool) -> Void in
-                    self.dragingPointImageView.removeFromSuperview()
-                    self.dragingPointUILable.removeFromSuperview()
                     self.hidden = false
                     self.shapeLayer.fillColor = UIColor.clearColor().CGColor
                     self.shapeLayer.hidden = true
