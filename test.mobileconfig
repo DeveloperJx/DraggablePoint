@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ConsentText</key>
+	<dict>
+		<key>default</key>
+		<string>Wi-Fi 测试 同意否？</string>
+	</dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>AutoJoin</key>
+			<true/>
+			<key>EncryptionType</key>
+			<string>WPA2</string>
+			<key>HIDDEN_NETWORK</key>
+			<false/>
+			<key>IsHotspot</key>
+			<false/>
+			<key>Password</key>
+			<string>12345678</string>
+			<key>PayloadDescription</key>
+			<string>配置 Wi-Fi 设置</string>
+			<key>PayloadDisplayName</key>
+			<string>Wi-Fi</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.wifi.managed.4F408860-EF2D-4DB6-969A-D170B94FC894</string>
+			<key>PayloadType</key>
+			<string>com.apple.wifi.managed</string>
+			<key>PayloadUUID</key>
+			<string>A3FC6086-F18B-4D33-A1A8-9E1A186641C4</string>
+			<key>PayloadVersion</key>
+			<real>1</real>
+			<key>ProxyType</key>
+			<string>None</string>
+			<key>SSID_STR</key>
+			<string>100</string>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Wi-Fi 测试</string>
+	<key>PayloadDisplayName</key>
+	<string>test</string>
+	<key>PayloadIdentifier</key>
+	<string>mac-mini-xcode7.local.59808663-E02D-4E02-B8FA-DEAD6A1FBBF5</string>
+	<key>PayloadOrganization</key>
+	<string>YH</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>7E443AFD-DA3D-4A22-B5ED-6D74481D5107</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
